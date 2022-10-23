@@ -1,5 +1,6 @@
 import numpy as np
 from cmath import exp
+import matplotlib as pls
 
 
 class Physics:
@@ -30,3 +31,6 @@ class Physics:
                                [1 / 2, mass_ / (2j * k)]])
         return out_matrix
 
+    def plot_conduction_band(self):
+
+        pass
