@@ -1,20 +1,35 @@
 import numpy as np
-from cmath import exp
-import matplotlib as pls
+from cmath import exp, sqrt
+import matplotlib.pyplot as plt
+
+from MaterialConstants import StructureCONST
+CONST = StructureCONST(300)
 
 
 class Physics:
-    def __init__(self):
-        self.conduction_band = None
+
+    @staticmethod
+    def k_in_qw(m: float, energy: float):
+        energy *= CONST.e
+        k_out = sqrt(2 * m * energy) / CONST.h_
+        return k_out
+
+    @staticmethod
+    def k_in_barrier(m: float, energy: float, potential: float):
+        energy *= CONST.e
+        potential *= CONST.e
+        k_out = sqrt(2 * m * (energy - potential)) / CONST.h_
+        return k_out
 
     @staticmethod
     def exp_body(k, a):
+        a *= 10 ** -9
         out_body = 1j * k * a
         return out_body
 
     @staticmethod
-    def qw_matrix(k, a):
-        exp_body = Physics.exp_body(k, a)
+    def qw_matrix(mass_, energy: float, a):
+        exp_body = Physics.exp_body(Physics.k_in_qw(mass_, energy), a)
         out_matrix = np.array([[exp(exp_body), 0],
                                [0, exp(-exp_body)]])
         return out_matrix
@@ -22,15 +37,54 @@ class Physics:
     @staticmethod
     def barrier_matrix(mass_, k):
         out_matrix = np.array([[1, 1],
-                               [1j * k / mass_, 1j * k / mass_]])
+                               [1j * k / mass_, -1j * k / mass_]])
         return out_matrix
 
     @staticmethod
     def inverse_barrier_matrix(mass_, k):
-        out_matrix = np.array([[1 / 2, mass_ / (2j * k)],
-                               [1 / 2, mass_ / (2j * k)]])
+        out_matrix = np.array([[1 / 2, - 1j * mass_ / (2 * k)],
+                               [1 / 2, 1j * mass_ / (2 * k)]])
         return out_matrix
 
-    def plot_conduction_band(self):
+    @staticmethod
+    def transfer_matrix(energy: float):
+        # Describe barriers and wave vectors
+        U0, U1 = np.array(CONST.Eg_GaAs - CONST.Eg_AlGaAs)
+        k0 = k4 = Physics.k_in_barrier(CONST.m_AlGaAs[0], energy, U0)
+        k1 = k3 = Physics.k_in_qw(CONST.m_GaAs, energy)
+        k2 = Physics.k_in_barrier(CONST.m_AlGaAs[1], energy, U1)
 
-        pass
+        # Describe matrices
+        m4_inv = Physics.inverse_barrier_matrix(CONST.m_AlGaAs[0], k4)
+        m3 = Physics.barrier_matrix(CONST.m_GaAs, k3)
+        n2 = Physics.qw_matrix(CONST.m_GaAs, energy,
+                               CONST.WIDTH_FIRST_QW + CONST.WIDTH_SECOND_QW + CONST.WIDTH_BARRIERS)
+        m3_inv = Physics.inverse_barrier_matrix(CONST.m_GaAs, k3)
+        m2 = Physics.barrier_matrix(CONST.m_AlGaAs[1], k2)
+        m2_inv = Physics.inverse_barrier_matrix(CONST.m_AlGaAs[1], k2)
+        m1 = Physics.barrier_matrix(CONST.m_GaAs, k1)
+        n1 = Physics.qw_matrix(CONST.m_GaAs, energy, CONST.WIDTH_FIRST_QW)
+        m1_inv = Physics.inverse_barrier_matrix(CONST.m_GaAs, k1)
+        m0 = Physics.barrier_matrix(CONST.m_AlGaAs[0], k0)
+
+        t = m4_inv @ m3 @ n2 @ m3_inv @ m2 @ m2_inv @ m1 @ n1 @ m1_inv @ m0
+        return t[1, 1]
+
+    @staticmethod
+    def plot_conduction_band():
+        x = [CONST.WIDTH_FIRST_QW,
+             CONST.WIDTH_BARRIERS + CONST.WIDTH_FIRST_QW,
+             CONST.WIDTH_BARRIERS + CONST.WIDTH_FIRST_QW + CONST.WIDTH_SECOND_QW]
+
+        y = np.array([CONST.Eg_GaAs - CONST.Eg_AlGaAs[1],
+                      CONST.Eg_GaAs - CONST.Eg_AlGaAs[1],
+                      CONST.Eg_GaAs - CONST.Eg_AlGaAs[0]])
+
+        fig, ax = plt.subplots()
+
+        ax.step(x, y, linewidth=2.5)
+        ax.set_xlabel("x, nm", fontsize=18)
+        ax.set_ylabel("Electron affinity, eV", fontsize=18)
+        ax.set(xlim=(0, x[2]), xticks=np.arange(1, x[2]),
+               ylim=(0, 2), yticks=np.arange(0, 2))
+        plt.show()
