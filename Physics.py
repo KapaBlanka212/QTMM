@@ -1,3 +1,4 @@
+from typing import List, Union, Tuple, NoReturn
 import numpy as np
 from cmath import exp, sqrt
 import matplotlib.pyplot as plt
@@ -70,21 +71,3 @@ class Physics:
         t = m4_inv @ m3 @ n2 @ m3_inv @ m2 @ m2_inv @ m1 @ n1 @ m1_inv @ m0
         return t[1, 1]
 
-    @staticmethod
-    def plot_conduction_band():
-        x = [CONST.WIDTH_FIRST_QW,
-             CONST.WIDTH_BARRIERS + CONST.WIDTH_FIRST_QW,
-             CONST.WIDTH_BARRIERS + CONST.WIDTH_FIRST_QW + CONST.WIDTH_SECOND_QW]
-
-        y = np.array([CONST.Eg_GaAs - CONST.Eg_AlGaAs[1],
-                      CONST.Eg_GaAs - CONST.Eg_AlGaAs[1],
-                      CONST.Eg_GaAs - CONST.Eg_AlGaAs[0]])
-
-        fig, ax = plt.subplots()
-
-        ax.step(x, y, linewidth=2.5)
-        ax.set_xlabel("x, nm", fontsize=18)
-        ax.set_ylabel("Electron affinity, eV", fontsize=18)
-        ax.set(xlim=(0, x[2]), xticks=np.arange(1, x[2]),
-               ylim=(0, 2), yticks=np.arange(0, 2))
-        plt.show()
