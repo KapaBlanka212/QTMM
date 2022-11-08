@@ -20,11 +20,11 @@ class StructureCONST:
             The heterostructure has two QWs 6 and 3 nm wide.
             QW material - GaAs
         '''
-        self.WIDTH_FIRST_QW = 6 # [nm]
-        self.WIDTH_SECOND_QW = 3 # [nm]
+        self.WIDTH_FIRST_QW = 6  # [nm]
+        self.WIDTH_SECOND_QW = 3  # [nm]
         # LINK [http://www.matprop.ru/GaAs_bandstr]
         self.m_GaAs = 0.63 * m0  # effective electron mass in GaAs [kg]
-        self.Eg_GaAs = 4.07 # energy gap GaAs at T K [eV]
+        self.Eg_GaAs = 4.07  # electron affinity at T K [eV]
 
         '''
         THE PARAMETERS OF BARRIERS ARE DESCRIBED BELLOW:
@@ -34,7 +34,7 @@ class StructureCONST:
         '''
         self.MOLE_FRACTION = np.array([0.3, 0.4])  # x in Al_(x)Ga_(1-x)As
         self.WIDTH_BARRIERS = 2  # nm
-        # Energy gap of barrier AlGaAs  link [http://www.matprop.ru/AlGaAs_basic]
+        # Electron affinity of barrier AlGaAs  LINK [http://www.matprop.ru/AlGaAs_basic]
         self.Eg_AlGaAs = np.array(4.07 - 1.1 * self.MOLE_FRACTION)
-        # effective electron mass in AlGaAs AT 300 K ! [kg]
-        self.m_AlGaAs = np.array(0.063 + 0.083 * self.MOLE_FRACTION) * m0  # link [http://www.matprop.ru/AlGaAs_basic]
+        # Effective electron mass in AlGaAs AT 300 K ! [kg]
+        self.m_AlGaAs = np.array(0.063 + 0.083 * self.MOLE_FRACTION) * m0  # LINK [http://www.matprop.ru/AlGaAs_basic]
