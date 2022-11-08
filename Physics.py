@@ -29,8 +29,8 @@ class Physics:
         return out_body
 
     @staticmethod
-    def qw_matrix(mass_, energy: float, a):
-        exp_body = Physics.exp_body(Physics.k_in_qw(mass_, energy), a)
+    def qw_matrix(mass_, energy: float, a, k: float):
+        exp_body = Physics.exp_body(k, a)
         out_matrix = np.array([[exp(exp_body), 0],
                                [0, exp(-exp_body)]])
         return out_matrix
@@ -59,15 +59,16 @@ class Physics:
         m4_inv = Physics.inverse_barrier_matrix(CONST.m_AlGaAs[0], k4)
         m3 = Physics.barrier_matrix(CONST.m_GaAs, k3)
         n2 = Physics.qw_matrix(CONST.m_GaAs, energy,
-                               CONST.WIDTH_FIRST_QW + CONST.WIDTH_SECOND_QW + CONST.WIDTH_BARRIERS)
+                               CONST.WIDTH_FIRST_QW + CONST.WIDTH_SECOND_QW + CONST.WIDTH_BARRIERS, k1)
         m3_inv = Physics.inverse_barrier_matrix(CONST.m_GaAs, k3)
         m2 = Physics.barrier_matrix(CONST.m_AlGaAs[1], k2)
+        n3 = Physics.qw_matrix(CONST.m_AlGaAs[1], energy, CONST.WIDTH_FIRST_QW + CONST.WIDTH_BARRIERS, k2)
         m2_inv = Physics.inverse_barrier_matrix(CONST.m_AlGaAs[1], k2)
         m1 = Physics.barrier_matrix(CONST.m_GaAs, k1)
-        n1 = Physics.qw_matrix(CONST.m_GaAs, energy, CONST.WIDTH_FIRST_QW)
+        n1 = Physics.qw_matrix(CONST.m_GaAs, energy, CONST.WIDTH_FIRST_QW, k1)
         m1_inv = Physics.inverse_barrier_matrix(CONST.m_GaAs, k1)
         m0 = Physics.barrier_matrix(CONST.m_AlGaAs[0], k0)
 
-        t = m4_inv @ m3 @ n2 @ m3_inv @ m2 @ m2_inv @ m1 @ n1 @ m1_inv @ m0
+        t = m4_inv @ m3 @ n2 @ m3_inv @ m2 @ n3 @ m2_inv @ m1 @ n1 @ m1_inv @ m0
         return t[1, 1]
 
