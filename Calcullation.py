@@ -9,16 +9,18 @@ CONST = StructureCONST(300)
 
 
 if __name__ == "__main__":
-    initual_guess = np.linspace(0, CONST.Eg_GaAs - CONST.Eg_AlGaAs[0], 100)
+    initial_guess = np.linspace(0, CONST.Eg_GaAs - CONST.Eg_AlGaAs[0], 100)
     ans_list = []
-    for x0 in initual_guess:
+    for x0 in initial_guess:
         try:
             ans = newton(Physics.transfer_matrix, x0)
-            if abs(np.imag(ans)) < 10 ** -19:
-                ans_list.append(np.round(ans.real, 3))
+            if abs(np.imag(ans)) < 10 ** -20:  # Energy must be real :3
+                if abs(Physics.transfer_matrix(ans.real)) < 10 ** -5:  # Check how close the answer is to 0
+                    ans_list.append(np.round(ans.real, 5))
         except Exception:
             pass
     ans_array = np.copy(ans_list)
+
     '''
     PLOT UNIT:
     ~~~~~~~~~~
