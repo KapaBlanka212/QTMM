@@ -23,7 +23,7 @@ class StructureCONST:
         self.WIDTH_FIRST_QW = 6  # [nm]
         self.WIDTH_SECOND_QW = 3  # [nm]
         # LINK [http://www.matprop.ru/GaAs_bandstr]
-        self.m_GaAs = 0.63 * m0  # effective electron mass in GaAs [kg]
+        self.m_GaAs = 0.063 * m0  # effective electron mass in GaAs [kg]
         self.Eg_GaAs = 4.07  # electron affinity at T K [eV]
 
         '''
