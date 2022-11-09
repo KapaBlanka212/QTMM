@@ -9,22 +9,24 @@ CONST = StructureCONST(300)
 
 
 if __name__ == "__main__":
-    initial_guess = np.linspace(0, CONST.Eg_GaAs - CONST.Eg_AlGaAs[0], 100)
-    ans_list = []
-    for x0 in initial_guess:
-        try:
-            ans = newton(Physics.transfer_matrix, x0)
-            if abs(np.imag(ans)) < 10 ** -20:  # Energy must be real :3
-                if abs(Physics.transfer_matrix(ans.real)) < 10 ** -5:  # Check how close the answer is to 0
-                    ans_list.append(np.round(ans.real, 5))
-        except Exception:
-            pass
-    ans_array = np.copy(ans_list)
-
+    U0 = CONST.Eg_GaAs - CONST.Eg_AlGaAs[0]
+    steps = 1000000
+    min_E = 0.04
+    max_E = 0.98 * U0
+    energy_space = np.geomspace(min_E, max_E, steps)
+    matrix_element_value = [[(Physics.transfer_matrix(item)).real, Physics.transfer_matrix(item).imag]
+                            for item in energy_space]
+    fig1 = plt.figure()
+    ax1 = fig1.add_subplot()
+    ax1.set_ylabel('Value element T[2,2] ', fontsize=15)
+    ax1.set_xlabel('E, eV', fontsize=15)
+    ax1.plot(energy_space, matrix_element_value)
+    plt.show()
     '''
     PLOT UNIT:
     ~~~~~~~~~~
     '''
+    """
     potential = np.array([CONST.Eg_GaAs - CONST.Eg_AlGaAs[0], CONST.Eg_GaAs - CONST.Eg_AlGaAs[1]])
     x = np.array([0.0,
                   CONST.WIDTH_FIRST_QW,
@@ -44,8 +46,7 @@ if __name__ == "__main__":
     ax.set_xlabel('x, nm', fontsize=15)
     ax.set(xlim=[0, np.max(x) + 1], xticks=np.linspace(np.min(x), np.max(x) + 1, 13),
            ylim=[np.min(y), np.max(y) + 0.5], yticks=np.linspace(np.min(y), np.max(y), 5))
-    ax.plot([np.min(x), np.max(x)], [ans_array, ans_array], linewidth=1)
-    plt.show()
-    plt.savefig("Eg")
-    print(f'Energy level is {np.sort(np.transpose(np.unique(ans_array)))}')
+
+    plt.savefig("Eg.png")
+    """
 
