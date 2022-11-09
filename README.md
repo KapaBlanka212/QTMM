@@ -1,2 +1,3 @@
 # CalcutationHeterostructures
-https://docs.yandex.ru/docs/view?url=ya-browser%3A%2F%2F4DT1uXEPRrJRXlUFoewruNIVXRW4D0xsbVEWA5kGHo-wgoYP8mne_17d6iEq27aqyTqvkGa5YMRqFdptqo9FX_wYYDy6kZwbO2sLZZGnuaBX12NYwWSB-RadWl-0Im67Puo7oSsQqBf-9d5mVEG4_g%3D%3D%3Fsign%3DnpOz4Td1Gn5zMma9gEiouURzsD_2kUGOzWQWNj6ChAw%3D&amp;name=Курсовая%20работа%20ЗАДАНИЕ.doc&amp;nosw=1
+before start do following: 
+pip install numpy, matplotlib
