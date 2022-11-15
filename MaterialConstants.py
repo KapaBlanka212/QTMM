@@ -32,9 +32,11 @@ class StructureCONST:
             The barriers material is Al_(x)Ga_(1-x)As there x equal 30 %,  at that Al_(0.4)Ga_(0.6)As is between
         QW.
         '''
-        self.MOLE_FRACTION = np.array([0.3, 0.4])  # x in Al_(x)Ga_(1-x)As
+        self.MOLE_FRACTION = np.array([0.4, 0.3])  # x in Al_(x)Ga_(1-x)As
         self.WIDTH_BARRIERS = 2  # nm
         # Electron affinity of barrier AlGaAs  LINK [http://www.matprop.ru/AlGaAs_basic]
         self.Eg_AlGaAs = np.array(4.07 - 1.1 * self.MOLE_FRACTION)
+
         # Effective electron mass in AlGaAs AT 300 K ! [kg]
         self.m_AlGaAs = np.array(0.063 + 0.083 * self.MOLE_FRACTION) * m0  # LINK [http://www.matprop.ru/AlGaAs_basic]
+
