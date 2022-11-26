@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import newton
-from scipy.integrate import simpson
+from scipy.integrate import simpson, quad, fixed_quad
 
 from MaterialConstants import StructureCONST
 from Physics import Physics
@@ -11,8 +11,8 @@ CONST = StructureCONST(300)
 
 def plot_t11_energy(steps, potential):
     U = potential
-    min_E = U[1] / 100
-    max_E = U[1] * 0.999
+    min_E = U[0] / 100
+    max_E = U[0] * 0.999
     root_e_find_space = np.geomspace(min_E, max_E, steps)
     t11_element_value = [Physics.find_energy(energy).real for energy in root_e_find_space]
     figure_e = plt.figure()
@@ -25,38 +25,33 @@ def plot_t11_energy(steps, potential):
 
 
 if __name__ == "__main__":
-    initial_guess = [0.04, 0.15, 0.28]
+
+    initial_guess = [0.07 * CONST.e, 0.16 * CONST.e, 0.28 * CONST.e]
     eqn_energy = lambda e: Physics.find_energy(e).real
+    print(eqn_energy(0.0701 * CONST.e), eqn_energy(0.16 * CONST.e), eqn_energy(0.28 * CONST.e))
     E = []
-    for x0 in initial_guess:
-        energy_ans = newton(eqn_energy, x0)
-        E.append(energy_ans)
-
-    steps = 100
-    z_min = -1 * 10 ** -9
-    z_max = 8.99 * 10 ** -9
+    try:
+        for x0 in initial_guess:
+            energy_ans = newton(eqn_energy, x0)
+            E.append(energy_ans)
+    except:
+        Exception
+    print(E)
+    steps = 1000
+    z_min = -10 * 10 ** -9
+    z_max = 15 * 10 ** -9
     z_space = np.linspace(z_min, z_max, steps)
-    wave_functon = np.copy(Physics.find_wave_function(E[0], z_space))
-    wave_functon1 = np.copy(Physics.find_wave_function(E[1], z_space))
-    wave_functon2 = np.copy(Physics.find_wave_function(E[2], z_space))
 
-    figure_f = plt.figure()
-    ax = figure_f.add_subplot()
-    ax.set_ylabel('Diff Wave Function', fontsize=12)
-    ax.set_xlabel('z, nm', fontsize=12)
-    ax.plot(z_space * 10 ** 9, wave_functon[:, 1])
-    ax.plot(z_space * 10 ** 9, wave_functon1[:, 1])
-    ax.plot(z_space * 10 ** 9, wave_functon2[:, 1])
-    ax.plot(z_space * 10 ** 9, np.zeros(z_space.shape))
+    wave_functon = np.copy([Physics.find_wave_function(0.16 * CONST.e, item) for item in z_space])
+    int = np.sqrt(quad(lambda x: np.abs(Physics.find_wave_function(0.16 * CONST.e, x)[0, :]) ** 2, z_min, z_max))
+    print(int[0])
 
     figure_w = plt.figure()
     ax = figure_w.add_subplot()
     ax.set_ylabel('Wave Function', fontsize=12)
     ax.set_xlabel('z, nm', fontsize=12)
-    ax.plot(z_space * 10 ** 9, wave_functon[:, 0])
-    ax.plot(z_space * 10 ** 9, wave_functon1[:, 0])
-    ax.plot(z_space * 10 ** 9, wave_functon2[:, 0])
-    ax.plot(z_space * 10 ** 9, np.zeros(z_space.shape))
+    ax.plot(z_space * 10 ** 9, wave_functon[:, 0], label='Full WF')
+    ax.legend()
     plt.show()
 
 

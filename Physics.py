@@ -10,15 +10,12 @@ class Physics:
 
     @staticmethod
     def k_(mass_: float, energy: float, potential: float) -> float:
-        E = energy * CONST.e
-        P = potential * CONST.e
-        k_out = sqrt(2 * mass_ * (E - P)) / CONST.h_
+        k_out = sqrt(2 * mass_ * (energy - potential)) / CONST.h_
         return 1j * abs(k_out)
 
     @staticmethod
     def real_k(mass_: float, energy: float) -> float:
-        E = energy * CONST.e
-        k_out = np.sqrt(2 * mass_ * E) / CONST.h_
+        k_out = np.sqrt(2 * mass_ * energy) / CONST.h_
         return k_out
 
     @staticmethod
@@ -31,6 +28,12 @@ class Physics:
         exp_body = Physics.exp_body(k, a)
         out_matrix = np.array([[exp(exp_body), 0.0],
                                [0.0, exp(-exp_body)]])
+        return out_matrix
+
+    @staticmethod
+    def n_z_matrix(z: float, z0: float, k: float) -> np.ndarray:
+        out_matrix = np.array([[exp(1j * k * (z - z0)), 0.0],
+                               [0.0, exp(-1j * k * (z - z0))]])
         return out_matrix
 
     @staticmethod
@@ -90,7 +93,7 @@ class Physics:
         return full_t[1, 1]
 
     @staticmethod
-    def find_wave_function(energy: float, z: np.ndarray) -> List:
+    def find_wave_function(energy: float, z: float) -> List:
         U = CONST.U  # U0 = 0.44 eV, U1 = 0.33 eV
 
         z0 = 0.0
@@ -122,35 +125,26 @@ class Physics:
         m4 = Physics.m_matrix(CONST.m_AlGaAs[0], k4)
         m4_inv = Physics.inverse_m_matrix(CONST.m_AlGaAs[0], k4)
 
-        C_sum = []
-        C0_in_z0 = np.array([[0], [1]])
+        n1 = Physics.n_z_matrix(z, z0, k1)
+        n2 = Physics.n_z_matrix(z, z1, k2)
+        n3 = Physics.n_z_matrix(z, z2, k3)
+        n4 = Physics.n_z_matrix(z, z3, k4)
 
-        for point in z:
-            n1 = Physics.n_matrix(point - z0, k1)
-            n2 = Physics.n_matrix(point - z1, k2)
-            n3 = Physics.n_matrix(point - z2, k3)
-            n4 = Physics.n_matrix(point - z3, k4)
+        C0 = np.array([[0], [1]])
+        C1 = n1 @ m1_inv @ m0 @ C0
+        C2 = n2 @ m2_inv @ m1 @ C1
+        C3 = n3 @ m3_inv @ m2 @ C2
+        C4 = n4 @ m4_inv @ m3 @ C3
+        C4[1] = 0.0
+        if z < z0:
+            return m0 @ (C0 * exp(-1j * k0 * z))
+        elif z0 < z < z1:
+            return m1 @ C1
+        elif z1 < z < z2:
+            return m2 @ C2
+        elif z2 < z < z3:
+            return m3 @ C3
+        elif z > z3:
+            return m4 @ C4
 
-            if point < z0:
-                C_sum.append((m0 @ (C0_in_z0 * exp(-1j * k0 * point))))
-            elif z0 < point < z1:
-                C1 = n1 @ m1_inv @ m0 @ C0_in_z0
-                C_sum.append((m1 @ C1))
-            elif z1 < point < z2:
-                C1 = n1 @ m1_inv @ m0 @ C0_in_z0
-                C2 = n2 @ m2_inv @ m1 @ C1
-                C_sum.append((m2 @ C2))
-            elif z2 < point < z3:
-                C1 = n1 @ m1_inv @ m0 @ C0_in_z0
-                C2 = n2 @ m2_inv @ m1 @ C1
-                C3 = n3 @ m3_inv @ m2 @ C2
-                C_sum.append((m3 @ C3))
-            elif point > z3:
-                C1 = n1 @ m1_inv @ m0 @ C0_in_z0
-                C2 = n2 @ m2_inv @ m1 @ C1
-                C3 = n3 @ m3_inv @ m2 @ C2
-                C4 = n4 @ m4_inv @ m3 @ C3
-                C_sum.append((m4 @ C4))
-
-        return C_sum
 
