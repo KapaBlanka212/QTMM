@@ -93,7 +93,7 @@ if __name__ == "__main__":
         ans = newton(lambda x: Physics.find_energy(x)[1, 1].real, x0)
         E.append(ans)
     
-    з
+    
     plot_wave_function(E, z_space)
     plot_norm_wave_function(E, z_space)
 
