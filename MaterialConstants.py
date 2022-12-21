@@ -22,8 +22,8 @@ class StructureCONST:
             QW material - GaAs
         '''
 
-        self.WIDTH_FIRST_QW = 6 * 10 ** -9  # [m]
-        self.WIDTH_SECOND_QW = 3 * 10 ** -9  # [m]
+        self.WIDTH_FIRST_QW = 4 * 10 ** -9  # [m]
+        self.WIDTH_SECOND_QW = 7 * 10 ** -9  # [m]
         # LINK [http://www.matprop.ru/GaAs_bandstr]
 
         self.m_GaAs = 0.063 * m0  # effective electron mass in GaAs [kg]
@@ -35,8 +35,8 @@ class StructureCONST:
             The barriers material is Al_(x)Ga_(1-x)As there x equal 30 %,  at that Al_(0.4)Ga_(0.6)As is between
         QW.
         '''
-        self.MOLE_FRACTION = np.array([0.4, 0.3])  # x in Al_(x)Ga_(1-x)As
-        self.WIDTH_BARRIERS = 2 * 10 ** -9  # m
+        self.MOLE_FRACTION = np.array([0.4, 0.1])  # x in Al_(x)Ga_(1-x)As
+        self.WIDTH_BARRIERS = 4 * 10 ** -9  # m
 
         # Electron affinity of barrier AlGaAs  LINK [http://www.matprop.ru/AlGaAs_basic]
         self.Eg_AlGaAs = (4.07 - 1.1 * self.MOLE_FRACTION)

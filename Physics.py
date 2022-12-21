@@ -13,7 +13,7 @@ class Physics:
         E = energy * CONST.e
         P = potential * CONST.e
         k_out = sqrt(2 * mass_ * (E - P)) / CONST.h_
-        return 1j * abs(k_out)
+        return k_out
 
     @staticmethod
     def real_k(mass_: float, energy: float) -> float:
@@ -150,5 +150,3 @@ class Physics:
             return m3 @ C3
         elif z > z3:
             return m4 @ C4
-
-
